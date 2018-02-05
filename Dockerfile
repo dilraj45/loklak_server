@@ -17,17 +17,18 @@ ADD ssi /loklak_server/ssi/
 ADD gradle /loklak_server/gradle/
 ADD gradlew /loklak_server/
 ADD build.gradle /loklak_server/
-ADD settings.gradle /loklak_server/
+ADD settings.gradle /loklak_server
+ADD .git /loklak_server
 
 # install OpenJDK 8 JDK, Ant, and Bash
 RUN apk update && apk add openjdk8 git bash && \
     # compile loklak
-    cd /loklak_server && ./gradlew build -x checkstyleMain -x checkstyleTest -x jacocoTestReport && \
+    cd /loklak_server && ./gradlew build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestReport && \
     # change config file
     sed -i 's/^\(port.http=\).*/\180/;s/^\(port.https=\).*/\1443/;s/^\(upgradeInterval=\).*/\186400000000/' \
         conf/config.properties && \
     # remove OpenJDK 8 JDK and Ant
-    apk del openjdk8 git && \
+    apk del openjdk8 && \
     # install OpenJDK 8 JRE without GUI support
     apk add openjdk8-jre-base
 
